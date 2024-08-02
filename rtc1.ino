@@ -13,6 +13,8 @@
 04 LED_ZAD GREEN
 03 BTN_ZAD GREEN
 */
+#define LED_AUTO 12
+#define BTN_AUTO 11
 #define OFF_DOM 10
 #define ON_DOM  9
 #define OFF_ZAD 8
@@ -24,6 +26,7 @@
 #define DEBUG 0
 
 bool LockByCron = false;
+bool autoMode = true;
 
 void setup() {
   pinMode(ON_DOM,OUTPUT);
@@ -32,6 +35,8 @@ void setup() {
   pinMode(OFF_ZAD,OUTPUT);
   pinMode(LED_DOM,OUTPUT);
   pinMode(LED_ZAD,OUTPUT);
+  pinMode(LED_AUTO,OUTPUT);
+  pinMode(BTN_AUTO, INPUT_PULLUP);
   pinMode(BTN_DOM, INPUT_PULLUP);
   pinMode(BTN_ZAD, INPUT_PULLUP);
   digitalWrite(OFF_ZAD, HIGH);
@@ -45,6 +50,7 @@ void setup() {
   //Serial.end();
   setupTime();
   powerDownAll();
+  digitalWrite(LED_AUTO, HIGH);
 }
 
 void powerDownAll() {
@@ -76,7 +82,7 @@ void blink(int led, int ledState){
 }
 
 void loop() {
-  cron();
+  if (autoMode) {cron();}
   detectButtonPressed();
   delay(500);
 }
@@ -98,6 +104,21 @@ void detectButtonPressed() {
     btnPressed = true;
     printDebugString("BTN_DOM pressed");
     switchState("DOM");
+    btnPressed = false;
+    return;
+  }
+  int autoBtn = digitalRead(BTN_AUTO);
+  if (autoBtn != LOW) {
+    btnPressed = true;
+    printDebugString("BTN_AUTO pressed");
+    if (autoMode) {
+      autoMode = false;
+      powerDownAll();
+      digitalWrite(LED_AUTO, LOW);
+    } else {
+      autoMode = true;
+      digitalWrite(LED_AUTO, HIGH);
+    }
   }
   btnPressed = false;
 }
