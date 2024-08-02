@@ -167,8 +167,8 @@ void cron() {
   case 3 ... 4:
     printDebugString("Spring 3,4,5");
     break;
-  case 9 ... 11:
-    printDebugString("Autumn 9,10,11");
+  case 10 ... 11:
+    printDebugString("Autumn 10,11");
     break;
   default:
     //printDebugString("Summer 6,7,8");
