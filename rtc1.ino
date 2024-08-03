@@ -53,10 +53,20 @@ void setup() {
   digitalWrite(LED_AUTO, HIGH);
 }
 
+bool zad_state_on = false;
+bool dom_state_on = false;
+int prevHour = -1;
 void powerDownAll() {
   //return;
   onOff(LED_ZAD,OFF_ZAD,false);
   onOff(LED_DOM,OFF_DOM,false);
+}
+void powerDownAuto() {
+  if (zad_state_on) {onOff(LED_ZAD,OFF_ZAD,false);}
+  if (dom_state_on) {onOff(LED_DOM,OFF_DOM,false);}
+  zad_state_on = false;
+  dom_state_on = false;
+  prevHour = -1;
 }
 void onOff(int led, int servo, bool on) {
   int signal = LOW;
@@ -113,7 +123,7 @@ void detectButtonPressed() {
     printDebugString("BTN_AUTO pressed");
     if (autoMode) {
       autoMode = false;
-      powerDownAll();
+      powerDownAuto();
       digitalWrite(LED_AUTO, LOW);
     } else {
       autoMode = true;
@@ -123,8 +133,6 @@ void detectButtonPressed() {
   btnPressed = false;
 }
 
-bool zad_state_on = false;
-bool dom_state_on = false;
 void switchState(const char* stateName) {
   int led, servo;
   bool on = true;
@@ -160,15 +168,19 @@ void cron() {
   switch (m) {
   case 12:
     printDebugString("Winter 12");
+    eachHour();
     break;
   case 1 ... 2:
     printDebugString("Winter 1,2");
+    eachHour();
     break;
   case 3 ... 4:
     printDebugString("Spring 3,4,5");
+    eachHour();
     break;
   case 10 ... 11:
     printDebugString("Autumn 10,11");
+    eachHour();
     break;
   default:
     //printDebugString("Summer 6,7,8");
@@ -207,7 +219,6 @@ void eachMin(int min) {
   saveTime();
 }
 
-int prevHour = -1;
 void eachHour() {
   int h = hour();
   if ((h - prevHour) == 0) { return;}
