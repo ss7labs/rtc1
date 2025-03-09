@@ -168,19 +168,35 @@ void cron() {
   switch (m) {
   case 12:
     printDebugString("Winter 12");
-    eachHour();
+    if (!zad_state_on && !dom_state_on) {return;} 
+//    if (!zad_state_on) {return;} 
+//    if (!dom_state_on) {return;}
+    powerDownAuto(); 
+    //eachHourLim(12,14);
     break;
   case 1 ... 2:
     printDebugString("Winter 1,2");
-    eachHour();
+    if (!zad_state_on && !dom_state_on) {return;} 
+//    if (!zad_state_on) {return;} 
+//    if (!dom_state_on) {return;}
+    powerDownAuto(); 
+    //eachHourLim(12,14);
     break;
   case 3 ... 4:
-    printDebugString("Spring 3,4,5");
-    eachHour();
+    printDebugString("Spring 3,4");
+    eachHourLim(12,16);
+    break;
+  case 5:
+    printDebugString("Spring 5");
+    eachHourLim(12,18);
+    break;
+  case 9:
+    printDebugString("Autumn 9");
+    eachHourLim(10,18);
     break;
   case 10 ... 11:
     printDebugString("Autumn 10,11");
-    eachHour();
+    eachHourLim(12,16);
     break;
   default:
     //printDebugString("Summer 6,7,8");
@@ -189,7 +205,18 @@ void cron() {
     break;
   }
 }
-
+void eachHourLim(int sT,int eT) {
+  int h = hour();
+  if (h < sT) { return;}
+  if (h > eT) { return;}
+  if (h == eT) {
+    if (!zad_state_on && !dom_state_on) {return;} 
+    //if  {return;}
+    powerDownAuto(); 
+    return;
+  }
+  eachHour();
+}
 void printDebugString(const char* msg) {
   if (!DEBUG) {return;}
   if (!Serial) {return;}
